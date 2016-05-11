@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.view.LayoutInflater;
 
 import dagger.Module;
 import dagger.Provides;
@@ -38,5 +39,11 @@ public class ActivityModule {
     @Provides
     LinearLayoutManager provideLinearLayoutManager(Context c) {
         return new LinearLayoutManager(c);
+    }
+
+    @Provides
+    @PerActivity
+    LayoutInflater provideLayoutInflater(Context c) {
+        return LayoutInflater.from(c);
     }
 }

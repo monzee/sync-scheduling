@@ -17,8 +17,15 @@ public abstract class MainContract {
             MainView view = new MainView();
             ButterKnife.bind(view, a);
             dependencies.injectMembers(view);
-            view.prepareTaskList();
+            view.prepare();
             return view;
+        }
+
+        @Provides
+        TaskPresenter provideAdapter(MembersInjector<TaskPresenter> dependencies) {
+            TaskPresenter p = new TaskPresenter();
+            dependencies.injectMembers(p);
+            return p;
         }
     }
 

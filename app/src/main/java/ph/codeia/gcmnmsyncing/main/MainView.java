@@ -1,9 +1,7 @@
 package ph.codeia.gcmnmsyncing.main;
 
 
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import java.util.Calendar;
 import java.util.List;
@@ -21,17 +19,14 @@ public class MainView {
     RecyclerView tasks;
 
     @Inject
-    TaskAdapter taskAdapter;
-
-    @Inject
-    LinearLayoutManager taskLayout;
-
-    @Inject
     MainPresenter presenter;
 
-    public void prepareTaskList() {
-        tasks.setLayoutManager(taskLayout);
-        tasks.setAdapter(taskAdapter);
+    @Inject
+    TaskPresenter taskPresenter;
+
+    public void prepare() {
+        presenter.bind(this);
+        taskPresenter.bind(tasks);
     }
 
     @OnClick(R.id.do_not_now)
@@ -46,16 +41,15 @@ public class MainView {
     }
 
     public void show(List<TaskItem> items) {
-        taskAdapter.setTaskItems(items);
-        taskAdapter.notifyDataSetChanged();
+        taskPresenter.setItems(items);
     }
 
     public void add(TaskItem item) {
-        taskAdapter.addTaskItem(item);
+        taskPresenter.addItem(item);
         tasks.scrollToPosition(0);
     }
 
     public void updateTask(String id, String status) {
-        taskAdapter.updateTaskItemStatus(id, status);
+        taskPresenter.updateTaskStatus(id, status);
     }
 }

@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
                 .getInjector(this)
                 .main()
                 .inject(this);
-        presenter.bind(view);
         onUpdate = OnBroadcast.run((context, intent) -> {
             String id = intent.getStringExtra(CodelabUtil.TASK_ID);
             String status = intent.getStringExtra(CodelabUtil.TASK_STATUS);
