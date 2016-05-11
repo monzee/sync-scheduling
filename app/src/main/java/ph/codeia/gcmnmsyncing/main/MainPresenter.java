@@ -51,4 +51,14 @@ public class MainPresenter {
             }
         });
     }
+
+    public void deleteTask(TaskItem task) {
+        store.delete(task, item -> {
+            if (view != null) {
+                view.delete(item);
+            } else {
+                state.delete(item);
+            }
+        });
+    }
 }

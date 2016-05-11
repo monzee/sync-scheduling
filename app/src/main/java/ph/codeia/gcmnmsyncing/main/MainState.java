@@ -35,6 +35,18 @@ public class MainState {
         newTasks.add(task);
     }
 
+    public void delete(TaskItem task) {
+        if (loadedTasks != null) {
+            String id = task.getId();
+            for (int i = 0; i < loadedTasks.size(); i++) {
+                if (id.equals(loadedTasks.get(i).getId())) {
+                    loadedTasks.remove(i);
+                    break;
+                }
+            }
+        }
+    }
+
     public void forEachNewTask(Consumer<TaskItem> block) {
         while (!newTasks.isEmpty()) {
             block.accept(newTasks.remove());

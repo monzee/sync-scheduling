@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         onUpdate = OnBroadcast.run((context, intent) -> {
             String id = intent.getStringExtra(CodelabUtil.TASK_ID);
             String status = intent.getStringExtra(CodelabUtil.TASK_STATUS);
-            view.updateTask(id, status);
+            view.update(new TaskItem(id, "(irrelevant)", status));
         });
     }
 

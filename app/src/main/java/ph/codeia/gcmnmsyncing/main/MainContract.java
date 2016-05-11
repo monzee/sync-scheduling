@@ -2,6 +2,11 @@ package ph.codeia.gcmnmsyncing.main;
 
 import android.app.Activity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Named;
+
 import butterknife.ButterKnife;
 import dagger.MembersInjector;
 import dagger.Module;
@@ -12,6 +17,8 @@ public abstract class MainContract {
     @Module
     @SuppressWarnings("unused")
     public static class Provider {
+        private final List<TaskItem> tasks = new ArrayList<>();
+
         @Provides
         MainView provideView(Activity a, MembersInjector<MainView> dependencies) {
             MainView view = new MainView();
@@ -22,10 +29,15 @@ public abstract class MainContract {
         }
 
         @Provides
-        TaskPresenter provideAdapter(MembersInjector<TaskPresenter> dependencies) {
-            TaskPresenter p = new TaskPresenter();
-            dependencies.injectMembers(p);
-            return p;
+        TaskAdapter provideAdapter(MembersInjector<TaskAdapter> dependencies) {
+            TaskAdapter a = new TaskAdapter();
+            dependencies.injectMembers(a);
+            return a;
+        }
+
+        @Provides @Named("tasks")
+        List<TaskItem> provideTasks() {
+            return tasks;
         }
     }
 

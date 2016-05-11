@@ -8,11 +8,11 @@ import android.os.AsyncTask;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import ph.codeia.gcmnmsyncing.util.Consumer;
-import ph.codeia.gcmnmsyncing.util.PerActivity;
 
-@PerActivity
+@Singleton
 public class TaskStorage {
     private final Context context;
 

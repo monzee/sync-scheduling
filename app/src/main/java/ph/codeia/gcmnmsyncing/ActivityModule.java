@@ -21,12 +21,6 @@ public class ActivityModule {
 
     @Provides
     @PerActivity
-    Context provideContext() {
-        return activity;
-    }
-
-    @Provides
-    @PerActivity
     Activity provideActivity() {
         return activity;
     }
@@ -43,7 +37,7 @@ public class ActivityModule {
 
     @Provides
     @PerActivity
-    LayoutInflater provideLayoutInflater(Context c) {
+    LayoutInflater provideLayoutInflater(Activity c) {
         return LayoutInflater.from(c);
     }
 }

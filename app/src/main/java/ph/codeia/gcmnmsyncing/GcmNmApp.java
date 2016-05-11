@@ -9,7 +9,9 @@ public class GcmNmApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        injector = DaggerGlobalScope.create();
+        injector = DaggerGlobalScope.builder()
+                .globalModule(new GlobalModule(this))
+                .build();
     }
 
     public GlobalScope getInjector() {
