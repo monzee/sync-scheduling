@@ -15,8 +15,7 @@ import dagger.Subcomponent;
 
 public abstract class MainContract {
     @Module
-    @SuppressWarnings("unused")
-    public static class Provider {
+    public static class Scope {
         private final List<TaskItem> tasks = new ArrayList<>();
 
         @Provides
@@ -41,8 +40,8 @@ public abstract class MainContract {
         }
     }
 
-    @Subcomponent(modules = {MainContract.Provider.class})
-    public interface Scope {
+    @Subcomponent(modules = {Scope.class})
+    public interface Injector {
         void inject(MainActivity activity);
     }
 }

@@ -4,21 +4,21 @@ import android.app.Activity;
 import android.app.Application;
 
 public class GcmNmApp extends Application {
-    private GlobalScope injector;
+    private GlobalInjector injector;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        injector = DaggerGlobalScope.builder()
-                .globalModule(new GlobalModule(this))
+        injector = DaggerGlobalInjector.builder()
+                .globalScope(new GlobalScope(this))
                 .build();
     }
 
-    public GlobalScope getInjector() {
+    public GlobalInjector getInjector() {
         return injector;
     }
 
-    public ActivityScope getInjector(Activity activity) {
-        return injector.activity(new ActivityModule(activity));
+    public ActivityInjector getInjector(Activity activity) {
+        return injector.activity(new ActivityScope(activity));
     }
 }
