@@ -13,7 +13,9 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.OnClick;
 import ph.codeia.gcmnmsyncing.R;
+import ph.codeia.gcmnmsyncing.util.PerActivity;
 
+@PerActivity
 public class MainView {
     @BindView(R.id.task_list)
     RecyclerView tasks;

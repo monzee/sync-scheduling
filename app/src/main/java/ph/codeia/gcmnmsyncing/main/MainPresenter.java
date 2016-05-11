@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import ph.codeia.gcmnmsyncing.util.PerActivity;
+
+@PerActivity
 public class MainPresenter {
 
     private MainView view;
