@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         localBroadcastManager.registerReceiver(onUpdate,
                 new IntentFilter(CodelabUtil.TASK_UPDATE_FILTER));
-        presenter.loadTasks(this);
+        presenter.loadTasks();
     }
 
     @Override

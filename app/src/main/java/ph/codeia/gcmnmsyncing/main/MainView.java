@@ -38,10 +38,9 @@ public class MainView {
     }
 
     @OnClick(R.id.do_now)
-    public void doNow(View view) {
+    public void doNow() {
         String id = "task_" + Calendar.getInstance().getTimeInMillis();
-        TaskItem task = new TaskItem(id, TaskItem.NOW_TASK, TaskItem.PENDING_STATUS);
-        presenter.addTask(view.getContext(), task);
+        presenter.addTask(new TaskItem(id, TaskItem.NOW_TASK, TaskItem.PENDING_STATUS));
     }
 
     public void show(List<TaskItem> items) {
