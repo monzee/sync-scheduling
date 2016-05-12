@@ -1,10 +1,13 @@
 package ph.codeia.gcmnmsyncing.main;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
+
+import com.google.android.gms.gcm.GcmNetworkManager;
+import com.google.android.gms.gcm.OneoffTask;
 
 import java.util.List;
 
@@ -17,6 +20,7 @@ import ph.codeia.gcmnmsyncing.util.Consumer;
 public class TaskStorage {
     public static final String TAG = TaskStorage.class.getSimpleName();
     private final Context context;
+    private final GcmNetworkManager scheduler;
 
     private class Load extends AsyncTask<Void, Void, List<TaskItem>> {
         private final Consumer<List<TaskItem>> callback;
@@ -54,7 +58,16 @@ public class TaskStorage {
         protected void onPostExecute(TaskItem taskItem) {
             callback.accept(taskItem);
             if (taskItem.getType().equals(TaskItem.ONEOFF_TASK)) {
-                // TODO: 10/05/16
+                Bundle b = new Bundle();
+                b.putString(CodelabUtil.TASK_ID, taskItem.getId());
+
+                scheduler.schedule(new OneoffTask.Builder()
+                        .setService(BestTimeService.class)
+                        .setTag(taskItem.getId())
+                        .setRequiredNetwork(OneoffTask.NETWORK_STATE_CONNECTED)
+                        .setExecutionWindow(0, 30)
+                        .setExtras(b)
+                        .build());
             } else {
                 Intent i = new Intent(context, NowIntentService.class);
                 i.putExtra(CodelabUtil.TASK_ID, taskItem.getId());
@@ -84,8 +97,9 @@ public class TaskStorage {
     }
 
     @Inject
-    public TaskStorage(Context context) {
+    public TaskStorage(Context context, GcmNetworkManager scheduler) {
         this.context = context;
+        this.scheduler = scheduler;
     }
 
     public void load(Consumer<List<TaskItem>> onLoad) {

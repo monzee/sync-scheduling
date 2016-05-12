@@ -37,7 +37,8 @@ public class MainView {
 
     @OnClick(R.id.do_not_now)
     public void doDeferred() {
-        // TODO: 10/05/16
+        String id = "task_" + Calendar.getInstance().getTimeInMillis();
+        presenter.addTask(new TaskItem(id, TaskItem.ONEOFF_TASK, TaskItem.PENDING_STATUS));
     }
 
     @OnClick(R.id.do_now)
