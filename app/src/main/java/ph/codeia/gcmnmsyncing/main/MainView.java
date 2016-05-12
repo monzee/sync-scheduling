@@ -33,7 +33,6 @@ public class MainView {
     public void prepare() {
         tasks.setAdapter(adapter);
         tasks.setLayoutManager(linear);
-        presenter.bind(this);
     }
 
     @OnClick(R.id.do_not_now)

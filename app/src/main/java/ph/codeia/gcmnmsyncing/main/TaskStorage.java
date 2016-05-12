@@ -4,6 +4,7 @@ package ph.codeia.gcmnmsyncing.main;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import ph.codeia.gcmnmsyncing.util.Consumer;
 
 @Singleton
 public class TaskStorage {
+    public static final String TAG = TaskStorage.class.getSimpleName();
     private final Context context;
 
     private class Load extends AsyncTask<Void, Void, List<TaskItem>> {
@@ -87,14 +89,17 @@ public class TaskStorage {
     }
 
     public void load(Consumer<List<TaskItem>> onLoad) {
+        Log.d(TAG, "loading from disk");
         new Load(onLoad).execute();
     }
 
     public void add(TaskItem task, Consumer<TaskItem> onAdd) {
+        Log.d(TAG, String.format("adding to disk: %s", task.getId()));
         new Add(onAdd).execute(task);
     }
 
     public void delete(TaskItem task, Consumer<TaskItem> onDelete) {
+        Log.d(TAG, String.format("deleting from disk: %s", task.getId()));
         new Delete(onDelete).execute(task);
     }
 }

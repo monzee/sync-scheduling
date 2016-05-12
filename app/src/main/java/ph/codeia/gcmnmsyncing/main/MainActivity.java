@@ -14,7 +14,7 @@ import ph.codeia.gcmnmsyncing.util.OnBroadcast;
 
 public class MainActivity extends AppCompatActivity {
     @Inject
-    LocalBroadcastManager localBroadcastManager;
+    LocalBroadcastManager broadcastManager;
 
     @Inject
     MainView view;
@@ -22,7 +22,11 @@ public class MainActivity extends AppCompatActivity {
     @Inject
     MainPresenter presenter;
 
-    private BroadcastReceiver onUpdate;
+    private final BroadcastReceiver doUpdate = OnBroadcast.run((context, intent) -> {
+        String id = intent.getStringExtra(CodelabUtil.TASK_ID);
+        String status = intent.getStringExtra(CodelabUtil.TASK_STATUS);
+        view.update(new TaskItem(id, "(irrelevant)", status));
+    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,17 +36,13 @@ public class MainActivity extends AppCompatActivity {
                 .getInjector(this)
                 .main()
                 .inject(this);
-        onUpdate = OnBroadcast.run((context, intent) -> {
-            String id = intent.getStringExtra(CodelabUtil.TASK_ID);
-            String status = intent.getStringExtra(CodelabUtil.TASK_STATUS);
-            view.update(new TaskItem(id, "(irrelevant)", status));
-        });
+        presenter.bind(view);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        localBroadcastManager.registerReceiver(onUpdate,
+        broadcastManager.registerReceiver(doUpdate,
                 new IntentFilter(CodelabUtil.TASK_UPDATE_FILTER));
         presenter.loadTasks();
     }
@@ -50,6 +50,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        localBroadcastManager.unregisterReceiver(onUpdate);
+        broadcastManager.unregisterReceiver(doUpdate);
     }
 }
