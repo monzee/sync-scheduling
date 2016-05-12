@@ -19,6 +19,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".main.AltActivity"
+            android:label="Alternative Impl"/>
+
         <service
             android:name=".main.NowIntentService"
             android:exported="false" />

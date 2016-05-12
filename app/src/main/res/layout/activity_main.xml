@@ -23,17 +23,25 @@
 
         <Button
             android:id="@+id/do_now"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Now"/>
 
         <Button
             android:id="@+id/do_not_now"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="When Best"/>
+
+        <Button
+            android:id="@+id/do_launch_alt"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:onClick="launchAlt"
+            android:text="Alt"/>
 
     </LinearLayout>
 
