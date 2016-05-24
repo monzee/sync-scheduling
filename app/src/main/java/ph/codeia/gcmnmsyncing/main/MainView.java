@@ -1,88 +1,64 @@
 package ph.codeia.gcmnmsyncing.main;
 
-
+import android.app.Activity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import java.util.Calendar;
-import java.util.List;
-
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ph.codeia.gcmnmsyncing.R;
 
-public class MainView {
-    @BindView(R.id.task_list)
-    RecyclerView tasks;
-
-    @Inject
-    MainPresenter presenter;
-
+public class MainView implements MainContract.Display {
     @Inject
     TaskAdapter adapter;
 
     @Inject
-    LinearLayoutManager linear;
+    MainContract.Interaction user;
 
-    @Inject @Named("tasks")
-    List<TaskItem> taskItems;
+    @BindView(R.id.task_list)
+    RecyclerView tasks;
 
-    public void prepare() {
-        tasks.setAdapter(adapter);
+    @Inject
+    public MainView() {}
+
+    @Inject
+    public void prepare(Activity a, LinearLayoutManager linear) {
+        ButterKnife.bind(this, a);
         tasks.setLayoutManager(linear);
-    }
-
-    @OnClick(R.id.do_not_now)
-    public void doDeferred() {
-        String id = "task_" + Calendar.getInstance().getTimeInMillis();
-        presenter.addTask(new TaskItem(id, TaskItem.ONEOFF_TASK, TaskItem.PENDING_STATUS));
+        tasks.setAdapter(adapter);
     }
 
     @OnClick(R.id.do_now)
-    public void doNow() {
-        String id = "task_" + Calendar.getInstance().getTimeInMillis();
-        presenter.addTask(new TaskItem(id, TaskItem.NOW_TASK, TaskItem.PENDING_STATUS));
+    void doNow() {
+        user.didPressNow();
     }
 
-    public void show(List<TaskItem> items) {
-        taskItems.clear();
-        taskItems.addAll(items);
+    @OnClick(R.id.do_not_now)
+    void doDeferred() {
+        user.didPressDeferred();
+    }
+
+    @Override
+    public void refresh() {
         adapter.notifyDataSetChanged();
     }
 
-    public void add(TaskItem item) {
-        taskItems.add(0, item);
-        adapter.notifyItemInserted(0);
-        tasks.scrollToPosition(0);
+    @Override
+    public void inserted(int pos) {
+        adapter.notifyItemInserted(pos);
+        tasks.scrollToPosition(pos);
     }
 
-    public void update(TaskItem task) {
-        int i = find(task.getId());
-        if (0 <= i && i < taskItems.size()) {
-            taskItems.get(i).setStatus(task.getStatus());
-            adapter.notifyItemChanged(i);
-        }
+    @Override
+    public void updated(int pos) {
+        adapter.notifyItemChanged(pos);
     }
 
-    public void delete(TaskItem task) {
-        int i = find(task.getId());
-        if (0 <= i && i < taskItems.size()) {
-            taskItems.remove(i);
-            adapter.notifyItemRemoved(i);
-        }
-    }
-
-    private int find(String id) {
-        int i = 0;
-        for (TaskItem task : taskItems) {
-            if (task.getId().equals(id)) {
-                return i;
-            }
-            i++;
-        }
-        return -1;
+    @Override
+    public void removed(int pos) {
+        adapter.notifyItemRemoved(pos);
     }
 }

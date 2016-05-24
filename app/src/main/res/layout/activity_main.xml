@@ -34,15 +34,6 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="When Best"/>
-
-        <Button
-            android:id="@+id/do_launch_alt"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:onClick="launchAlt"
-            android:text="Alt"/>
-
     </LinearLayout>
 
 </LinearLayout>

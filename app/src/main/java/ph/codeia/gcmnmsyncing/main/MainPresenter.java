@@ -1,64 +1,125 @@
 package ph.codeia.gcmnmsyncing.main;
 
-
+import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
-import ph.codeia.gcmnmsyncing.util.PerActivity;
+import ph.codeia.gcmnmsyncing.util.PerFeature;
 
-@PerActivity
-public class MainPresenter {
+@PerFeature
+public class MainPresenter implements MainContract.Interaction, MainContract.Synchronization {
+    @Inject @Named("alt_tasks")
+    List<TaskItem> tasks;
 
-    private MainView view;
-    private final MainState state;
-    private final TaskStorage store;
+    @Inject @Named("alt_tasks")
+    AtomicBoolean stale;
 
     @Inject
-    public MainPresenter(MainState state, TaskStorage store) {
-        this.state = state;
-        this.store = store;
+    MainContract.Storage store;
+
+    private MainContract.Display view;
+
+    @Inject
+    public MainPresenter() {}
+
+    @Override
+    public void didPressNow() {
+        addTask(TaskItem.NOW_TASK, TaskItem.PENDING_STATUS);
     }
 
-    public void bind(MainView view) {
+    @Override
+    public void didPressDeferred() {
+        addTask(TaskItem.ONEOFF_TASK, TaskItem.PENDING_STATUS);
+    }
+
+    @Override
+    public void didPressDelete(int pos) {
+        if (isValidIndex(pos)) {
+            deleteTask(tasks.get(pos).getId());
+        }
+    }
+
+    @Override
+    public void bind(MainContract.Display view) {
         this.view = view;
-        if (view == null) {
-            return;
+        if (view != null) {
+            if (stale.get()) {
+                loadTasks();
+                stale.set(false);
+            } else {
+                view.refresh();
+            }
         }
-        List<TaskItem> gotItems = state.unload();
-        if (gotItems != null) {
-            view.show(gotItems);
-        }
-        state.forEachNewTask(view::add);
     }
 
+    @Override
     public void loadTasks() {
-        store.load(tasks -> {
+        store.load(items -> {
+            tasks.clear();
+            tasks.addAll(items);
             if (view != null) {
-                view.show(tasks);
-            } else {
-                state.load(tasks);
+                view.refresh();
             }
         });
     }
 
-    public void addTask(TaskItem task) {
-        store.add(task, item -> {
+    @Override
+    public void addTask(String type, String status) {
+        TaskItem t = new TaskItem(generateId(), type, status);
+        store.add(t, task -> {
+            tasks.add(0, task);
             if (view != null) {
-                view.add(item);
-            } else {
-                state.add(item);
+                stale.set(false);
+                view.inserted(0);
             }
         });
     }
 
-    public void deleteTask(TaskItem task) {
-        store.delete(task, item -> {
+    @Override
+    public void taskUpdated(String id, String status) {
+        int i = find(id);
+        if (isValidIndex(i)) {
+            TaskItem t = tasks.get(i);
+            t.setStatus(status);
             if (view != null) {
-                view.delete(item);
-            } else {
-                state.delete(item);
+                view.updated(i);
+            }
+        }
+    }
+
+    @Override
+    public void deleteTask(String id) {
+        store.delete(new TaskItem(id, "", ""), task -> {
+            int i = find(id);
+            if (isValidIndex(i)) {
+                tasks.remove(i);
+                if (view != null) {
+                    stale.set(false);
+                    view.removed(i);
+                }
             }
         });
+    }
+
+    private static String generateId() {
+        return "task_" + Calendar.getInstance().getTimeInMillis();
+    }
+
+    private int find(String id) {
+        int i = 0;
+        for (TaskItem t : tasks) {
+            if (id.equals(t.getId())) {
+                return i;
+            }
+            i++;
+        }
+        return -1;
+    }
+
+    private boolean isValidIndex(int i) {
+        return 0 <= i && i < tasks.size();
     }
 }

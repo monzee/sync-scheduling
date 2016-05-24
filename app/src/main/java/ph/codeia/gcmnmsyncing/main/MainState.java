@@ -1,55 +1,17 @@
 package ph.codeia.gcmnmsyncing.main;
 
-import android.support.annotation.Nullable;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import ph.codeia.gcmnmsyncing.util.Consumer;
-
 @Singleton
 public class MainState {
-
-    private final Deque<TaskItem> newTasks = new ArrayDeque<>();
-    private @Nullable List<TaskItem> loadedTasks;
+    public final List<TaskItem> tasks = new ArrayList<>();
+    public final AtomicBoolean stale = new AtomicBoolean(true);
 
     @Inject
-    public MainState() {
-    }
-
-    public void load(List<TaskItem> tasks) {
-        loadedTasks = tasks;
-    }
-
-    public @Nullable List<TaskItem> unload() {
-        List<TaskItem> tasks = loadedTasks;
-        loadedTasks = null;
-        return tasks;
-    }
-
-    public void add(TaskItem task) {
-        newTasks.add(task);
-    }
-
-    public void delete(TaskItem task) {
-        if (loadedTasks != null) {
-            String id = task.getId();
-            for (int i = 0; i < loadedTasks.size(); i++) {
-                if (id.equals(loadedTasks.get(i).getId())) {
-                    loadedTasks.remove(i);
-                    break;
-                }
-            }
-        }
-    }
-
-    public void forEachNewTask(Consumer<TaskItem> block) {
-        while (!newTasks.isEmpty()) {
-            block.accept(newTasks.remove());
-        }
-    }
+    public MainState() {}
 }

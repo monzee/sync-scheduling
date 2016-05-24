@@ -17,10 +17,11 @@ import javax.inject.Singleton;
 import ph.codeia.gcmnmsyncing.util.Consumer;
 
 @Singleton
-public class TaskStorage {
+public class TaskStorage implements MainContract.Storage {
     public static final String TAG = TaskStorage.class.getSimpleName();
     private final Context context;
     private final GcmNetworkManager scheduler;
+    private final MainState state;
 
     private class Load extends AsyncTask<Void, Void, List<TaskItem>> {
         private final Consumer<List<TaskItem>> callback;
@@ -97,9 +98,10 @@ public class TaskStorage {
     }
 
     @Inject
-    public TaskStorage(Context context, GcmNetworkManager scheduler) {
+    public TaskStorage(Context context, GcmNetworkManager scheduler, MainState state) {
         this.context = context;
         this.scheduler = scheduler;
+        this.state = state;
     }
 
     public void load(Consumer<List<TaskItem>> onLoad) {
@@ -108,11 +110,13 @@ public class TaskStorage {
     }
 
     public void add(TaskItem task, Consumer<TaskItem> onAdd) {
+        state.stale.set(true);
         Log.d(TAG, String.format("adding to disk: %s", task.getId()));
         new Add(onAdd).execute(task);
     }
 
     public void delete(TaskItem task, Consumer<TaskItem> onDelete) {
+        state.stale.set(true);
         Log.d(TAG, String.format("deleting from disk: %s", task.getId()));
         new Delete(onDelete).execute(task);
     }

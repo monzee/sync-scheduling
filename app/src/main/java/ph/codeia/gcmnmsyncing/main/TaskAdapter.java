@@ -1,5 +1,6 @@
 package ph.codeia.gcmnmsyncing.main;
 
+
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,42 +30,39 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.Entry> {
 
         public Entry(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
         }
     }
 
     @Inject
-    MainPresenter presenter;
-
-    @Inject
     LayoutInflater inflater;
 
-    @Inject @Named("tasks")
-    List<TaskItem> taskItems;
+    @Inject
+    MainContract.Interaction user;
+
+    @Inject @Named("alt_tasks")
+    List<TaskItem> tasks;
+
+    @Inject
+    public TaskAdapter() {}
 
     @Override
     public Entry onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = inflater.inflate(R.layout.item_task, parent, false);
         Entry holder = new Entry(view);
-        holder.delete.setOnClickListener(v -> {
-            int i = holder.getAdapterPosition();
-            if (i < 0 || i >= getItemCount()) {
-                return;
-            }
-            presenter.deleteTask(taskItems.get(i));
-        });
+        ButterKnife.bind(holder, view);
+        holder.delete.setOnClickListener(v -> user.didPressDelete(holder.getAdapterPosition()));
         return holder;
     }
 
     @Override
     public void onBindViewHolder(Entry holder, int position) {
-        TaskItem task = taskItems.get(position);
-        holder.task.setText(task.getType());
-        holder.status.setText(task.getStatus());
+        TaskItem t = tasks.get(position);
+        holder.task.setText(t.getType());
+        holder.status.setText(t.getStatus());
     }
 
     @Override
     public int getItemCount() {
-        return taskItems.size();
+        return tasks.size();
     }
 }
